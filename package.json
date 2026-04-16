@@ -1,0 +1,21 @@
+{
+  "name": "rangewise",
+  "version": "0.0.1",
+  "description": "Rangewise is a UX-first date range formatter that intelligently adapts to context—showing only what matters, when it matters. ## Installation",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/swamitrasingh/Rangewise.git"
+  },
+  "keywords": ["date", "time", "range", "ux"],
+  "author": "",
+  "license": "MIT",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/swamitrasingh/Rangewise/issues"
+  },
+  "homepage": "https://github.com/swamitrasingh/Rangewise#readme"
+}
