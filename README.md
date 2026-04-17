@@ -1,4 +1,4 @@
-<![CDATA[# Rangewise
+# Rangewise
 
 [![npm version](https://img.shields.io/npm/v/rangewise)](https://www.npmjs.com/package/rangewise)
 [![license](https://img.shields.io/npm/l/rangewise)](./LICENSE)
@@ -380,4 +380,3 @@ Contributions are welcome! Here are some areas where you can help:
 ## License
 
 [MIT](./LICENSE) © swamitrasingh
-]]>
