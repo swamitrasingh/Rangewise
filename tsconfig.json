@@ -14,6 +14,7 @@
     "outDir": "./dist",
     "esModuleInterop": true,
     "types": [],
+    "ignoreDeprecations": "6.0",
     // For nodejs:
     // "lib": ["esnext"],
     // "types": ["node"],

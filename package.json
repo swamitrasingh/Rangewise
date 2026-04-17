@@ -5,9 +5,7 @@
   "main": "dist/index.cjs",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch"
@@ -17,11 +15,30 @@
     "url": "git+https://github.com/swamitrasingh/Rangewise.git"
   },
   "keywords": [
-    "date",
-    "time",
-    "range",
-    "ux"
-  ],
+  "date",
+  "datetime",
+  "date-range",
+  "time-range",
+  "date-format",
+  "time-format",
+  "datetime-format",
+  "date-formatting",
+  "time-formatting",
+  "human-readable",
+  "ux",
+  "ui",
+  "frontend",
+  "i18n",
+  "localization",
+  "intl",
+  "javascript",
+  "typescript",
+  "utility",
+  "formatting",
+  "time",
+  "range",
+  "rangewise"
+],
   "author": "",
   "license": "MIT",
   "type": "module",
