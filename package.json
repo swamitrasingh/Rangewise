@@ -1,6 +1,6 @@
 {
   "name": "rangewise",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "Rangewise is a UX-first date range formatter that intelligently adapts to context—showing only what matters, when it matters. ## Installation",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
