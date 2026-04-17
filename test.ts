@@ -410,6 +410,82 @@ runDateTest(
   "de-DE"
 );
 // --------------------------------------------------
+// CREATE FORMATTER
+// --------------------------------------------------
+
+import { createFormatter } from "./src/createFormatter";
+
+const testRegistry = {
+  events: {
+    meeting: {
+      type: "date" as const,
+      options: { hour12: false, now: NOW }
+    },
+    conference: {
+      type: "range" as const,
+      locale: "en-US",
+      options: { spaced: true, compactAmPm: true, now: NOW }
+    }
+  }
+} as const;
+
+const formatFn = createFormatter(testRegistry);
+
+function runFormatterTest(
+  label: string,
+  key: "events.meeting" | "events.conference",
+  input: any,
+  expected: string
+) {
+  try {
+    const result = formatFn(key, input);
+
+    const isPass = result === expected;
+
+    console.log(`\n=== ${label} ===`);
+    console.log("Output  :", result);
+    console.log("Expected:", expected);
+    console.log(isPass ? "✅ PASS" : "❌ FAIL");
+
+    if (isPass) passed++;
+    else failed++;
+  } catch (e: any) {
+    console.log(`\n=== ${label} (ERROR) ===`);
+    console.log("Error:", e.message);
+    failed++;
+  }
+}
+
+runFormatterTest(
+  "createFormatter (date)",
+  "events.meeting",
+  { date: new Date("2026-04-16T10:00:00") },
+  "Today, 10:00"
+);
+
+runFormatterTest(
+  "createFormatter (range)",
+  "events.conference",
+  { start: new Date("2026-04-16T10:00:00"), end: new Date("2026-04-16T12:00:00") },
+  "Today, 10:00am – 12:00pm"
+);
+
+try {
+  const result = formatFn(testRegistry.events.meeting, { date: new Date("2026-04-16T10:00:00") });
+  const isPass = result === "Today, 10:00";
+  console.log(`\n=== createFormatter (direct config) ===`);
+  console.log("Output  :", result);
+  console.log("Expected: Today, 10:00");
+  console.log(isPass ? "✅ PASS" : "❌ FAIL");
+  if (isPass) passed++;
+  else failed++;
+} catch (e: any) {
+  console.log(`\n=== createFormatter (direct config) (ERROR) ===`);
+  console.log("Error:", e.message);
+  failed++;
+}
+
+// --------------------------------------------------
 // SUMMARY
 // --------------------------------------------------
 

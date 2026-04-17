@@ -1,6 +1,6 @@
 import { analyzeRange } from "./analyzeRange";
 
-type FormatOptions = {
+export type FormatOptions = {
   spaced?: boolean;
   hour12?: boolean;
   compactAmPm?: boolean;
