@@ -35,6 +35,7 @@ It does the thinking so your users don't have to.
 
 | Feature | Description |
 |---|---|
+| **Named Format Registry** | Define all your date formats in one config, use them everywhere with full TypeScript autocomplete |
 | **Context-aware** | Adapts output based on whether the range is same-day, same-month, same-year, or cross-year |
 | **Relative labels** | Automatically uses *Today*, *Tomorrow*, *Yesterday*, and weekday names |
 | **Locale support** | Built-in labels for English, Spanish, French, and German; date formatting via `Intl.DateTimeFormat` |
@@ -61,6 +62,224 @@ yarn add rangewise
 pnpm add rangewise
 ```
 
+---
+
+## Quick Start — Named Format Registry
+
+The **recommended way** to use Rangewise is through the Named Format Registry. Define all your application's date formats in a single configuration file, then use them anywhere with a one-liner.
+
+### Step 1: Define your formats
+
+Create a centralized config file — this is the single source of truth for every date format in your application.
+
+```ts
+// formatConfig.ts
+import { createFormatter } from "rangewise";
+
+const formats = {
+  invite: {
+    dateRange: {
+      type: "range",
+      locale: "en-US",
+      options: {
+        spaced: true,
+        hour12: true,
+        compactAmPm: true,
+        hideMinutes: false,
+      }
+    }
+  },
+  alarm: {
+    dateTime: {
+      type: "date",
+      options: { hour12: false }
+    }
+  },
+  calendar: {
+    event: {
+      type: "range",
+      options: { compactAmPm: true }
+    },
+    reminder: {
+      type: "date",
+      options: { hideMinutes: true, compactAmPm: true }
+    }
+  }
+} as const;
+
+export const format = createFormatter(formats);
+```
+
+### Step 2: Use it anywhere
+
+Import the `format` function wherever you need it. Every call is **one line**, fully type-safe, and backed by the centralized config.
+
+```ts
+import { format } from "./formatConfig";
+
+// String key — with full autocomplete in your IDE
+format("invite.dateRange", { start, end });
+// → "Today, 10:00am – 12:00pm"
+
+format("alarm.dateTime", { date: new Date() });
+// → "Today, 14:00"
+
+format("calendar.reminder", { date: new Date() });
+// → "Today, 2pm"
+```
+
+### Why this matters
+
+| Without Registry | With Registry |
+|---|---|
+| Format options scattered across components | One config file, used everywhere |
+| Inconsistent formatting across the app | Guaranteed consistency |
+| Refactoring means hunting through files | Change once, applies globally |
+| No autocomplete for format strings | Full IDE autocomplete + type safety |
+
+The registry acts as a **design system for dates** — just like you centralize colors and typography, you centralize how every date appears.
+
+---
+
+### Type-Safe Autocomplete
+
+The format function provides **full TypeScript autocomplete** for both keys and inputs:
+
+```ts
+// ✅ Autocomplete suggests: "invite.dateRange" | "alarm.dateTime" | "calendar.event" | "calendar.reminder"
+format("invite.dateRange", { start, end });
+
+// ✅ TypeScript knows this needs { start: Date; end: Date }
+format("calendar.event", { start: new Date(), end: new Date() });
+
+// ✅ TypeScript knows this needs { date: Date }
+format("alarm.dateTime", { date: new Date() });
+
+// ❌ Type error — "invite.dateRange" expects { start, end }, not { date }
+format("invite.dateRange", { date: new Date() });
+
+// ❌ Type error — invalid key
+format("nonexistent.key", { date: new Date() });
+```
+
+You can also pass a config object directly:
+
+```ts
+format(formats.alarm.dateTime, { date: new Date() });
+```
+
+---
+
+### Format Config Reference
+
+Each entry in your registry is a `DateFormatConfig`:
+
+```ts
+{
+  type: "date" | "range",   // Required — determines the input shape
+  locale?: string,           // Optional — BCP 47 locale tag (default: "en-IN")
+  options?: {                // Optional — formatting overrides
+    spaced?: boolean,        //   Use spaced separator: " – " vs "–"
+    hour12?: boolean,        //   Force 12h or 24h (auto-detected from locale if omitted)
+    compactAmPm?: boolean,   //   Lowercase attached AM/PM: "10:00am" vs "10:00 AM"
+    hideMinutes?: boolean,   //   Drop ":00" minutes: "10am" vs "10:00am"
+    now?: Date,              //   Override current time (for testing)
+  }
+}
+```
+
+**Input shape is determined by `type`:**
+
+| `type` | Required Input |
+|--------|---------------|
+| `"date"` | `{ date: Date }` |
+| `"range"` | `{ start: Date; end: Date }` |
+
+---
+
+## Works With Every Framework
+
+Rangewise is **framework-agnostic by design**. The `formatConfig.ts` file stays the same — only the consumption layer changes. Here's how the same centralized config integrates with popular frameworks:
+
+### React
+
+```tsx
+// components/EventCard.tsx
+import { format } from "../formatConfig";
+
+export function EventCard({ start, end }: { start: Date; end: Date }) {
+  return (
+    <div className="event-card">
+      <p>{format("invite.dateRange", { start, end })}</p>
+    </div>
+  );
+}
+```
+
+### Angular
+
+```ts
+// pipes/format-date.pipe.ts
+import { Pipe, PipeTransform } from "@angular/core";
+import { format } from "../formatConfig";
+
+@Pipe({ name: "rwDate" })
+export class FormatDatePipe implements PipeTransform {
+  transform(date: Date): string {
+    return format("alarm.dateTime", { date });
+  }
+}
+```
+
+```html
+<!-- event.component.html -->
+<span>{{ eventDate | rwDate }}</span>
+```
+
+### Vue
+
+```vue
+<!-- EventCard.vue -->
+<script setup lang="ts">
+import { format } from "../formatConfig";
+
+const props = defineProps<{ start: Date; end: Date }>();
+const label = computed(() => format("invite.dateRange", { start: props.start, end: props.end }));
+</script>
+
+<template>
+  <div class="event-card">
+    <p>{{ label }}</p>
+  </div>
+</template>
+```
+
+### Svelte
+
+```svelte
+<!-- EventCard.svelte -->
+<script lang="ts">
+  import { format } from "../formatConfig";
+
+  export let start: Date;
+  export let end: Date;
+
+  $: label = format("invite.dateRange", { start, end });
+</script>
+
+<div class="event-card">
+  <p>{label}</p>
+</div>
+```
+
+> **The pattern is always the same:** define your formats once in `formatConfig.ts`, import the `format` function, and call it with a key. No framework-specific adapters, no wrappers, no plugins.
+
+---
+
+## Direct API
+
+For one-off formatting or when you don't need a registry, Rangewise also exports the underlying functions directly.
+
 ### Importing
 
 ```ts
@@ -73,9 +292,9 @@ const { formatRange, formatDate, analyzeRange } = require("rangewise");
 
 ---
 
-## Quick Start
+### `formatRange(start, end, locale?, options?)`
 
-### Format a date range
+Formats two `Date` objects into a single human-readable range string.
 
 ```ts
 import { formatRange } from "rangewise";
@@ -92,26 +311,6 @@ formatRange(start, end, "en-US");
 formatRange(start, end, "es-ES");
 // → "Hoy, 10:00–12:00"
 ```
-
-### Format a single date
-
-```ts
-import { formatDate } from "rangewise";
-
-formatDate(new Date("2026-04-16T10:00:00"));
-// → "Today, 10:00"
-
-formatDate(new Date("2026-04-17T10:00:00"));
-// → "Tomorrow, 10:00"
-```
-
----
-
-## API Reference
-
-### `formatRange(start, end, locale?, options?)`
-
-Formats two `Date` objects into a single human-readable range string.
 
 ```ts
 function formatRange(
@@ -136,6 +335,16 @@ function formatRange(
 ### `formatDate(date, locale?, options?)`
 
 Formats a single `Date` into a human-readable string with a contextual label.
+
+```ts
+import { formatDate } from "rangewise";
+
+formatDate(new Date("2026-04-16T10:00:00"));
+// → "Today, 10:00"
+
+formatDate(new Date("2026-04-17T10:00:00"));
+// → "Tomorrow, 10:00"
+```
 
 ```ts
 function formatDate(
@@ -200,7 +409,7 @@ const result = analyzeRange(
 
 ### `FormatOptions`
 
-All options are optional. Pass them as the last argument to `formatRange` or `formatDate`.
+All options are optional. Pass them as the last argument to `formatRange` or `formatDate`, or inside a registry config's `options` field.
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
@@ -252,7 +461,7 @@ The table below shows how different date ranges are formatted. All examples assu
 All examples use `en-US`, today at `10:00–12:00`.
 
 | Options | `formatRange` Output | `formatDate` Output (10:00) |
-|---------|---------------------|-----------------------------|
+|---------|---------------------|------------------------------|
 | *(defaults)* | `Today, 10:00 AM–12:00 PM` | `Today, 10:00 AM` |
 | `compactAmPm: true` | `Today, 10:00am–12:00pm` | `Today, 10:00am` |
 | `hideMinutes: true` | `Today, 10–12 PM` | `Today, 10 AM` |
@@ -291,7 +500,7 @@ The definition of "same week" depends on locale. Rangewise respects this:
 
 ## Running the Demo
 
-The project includes an interactive demo with a Flatpickr-based calendar UI.
+The project includes an interactive demo that showcases the Named Format Registry pattern with a Flatpickr-based calendar UI.
 
 ```bash
 # 1. Install dependencies
@@ -303,8 +512,10 @@ npm run demo
 
 This opens a local development server (typically at `http://localhost:5173`) with two calendar controls:
 
-1. **Single Date/Time** — pick a date and time, see the `formatDate` output
-2. **Date/Time Range** — pick a start and end, see the `formatRange` output
+1. **Single Date/Time** — pick a date and time, see `format("demo.singleDate", ...)` in action
+2. **Date/Time Range** — pick a start and end, see `format("demo.dateRange", ...)` in action
+
+The demo uses a centralized `formatConfig.ts` that defines the registry — exactly as you would in a real application.
 
 ---
 
@@ -329,6 +540,7 @@ npx tsx test.ts
 - Invalid range error handling (end < start)
 - Single date formatting (`formatDate`) for all contexts
 - Option combinations (`compactAmPm`, `hideMinutes`)
+- **Named Format Registry** — string keys, direct config objects
 
 You can also verify the build output works correctly:
 
@@ -353,6 +565,7 @@ Rangewise is built around **UX-first formatting**, not just correctness.
 | **Adapt to context** | Show more detail for far-apart dates; less for nearby ones |
 | **Respect user locale** | Auto-detect 12h/24h; use localised labels and date ordering |
 | **Keep output scannable** | Produce compact strings that work in tight UI spaces |
+| **Centralise formatting** | Named Format Registry gives your app a single source of truth for date display |
 
 ---
 
