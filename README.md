@@ -375,6 +375,8 @@ Contributions are welcome! Here are some areas where you can help:
 - **Enhance performance** — optimise for high-frequency calls
 - **Suggest UX improvements** — propose better defaults or new options
 
+Contact at [EMAIL_ADDRESS] for contributions.
+
 ---
 
 ## License
