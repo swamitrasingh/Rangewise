@@ -49,7 +49,7 @@ Supports multiple locales:
 - German (`de`)
 
 ```ts
-formatRangeUX(start, end, "fr-FR");
+formatRange(start, end, "fr-FR");
 // Aujourd’hui, 10:00–12:00
 ```
 
@@ -65,15 +65,15 @@ Weekday (Wed, Mon, etc.)
 #### ⏰ Smart time formatting
 ✅ Auto 12h / 24h detection
 ```ts
-formatRangeUX(start, end, "en-US"); // 12h
-formatRangeUX(start, end, "fr-FR"); // 24h
+formatRange(start, end, "en-US"); // 12h
+formatRange(start, end, "fr-FR"); // 24h
 ```
 #### ✂️ AM/PM collapsing
 10:00 AM–11:00 AM → 10:00–11:00 AM
 
 #### 🧩 Compact AM/PM
 ```ts
-formatRangeUX(start, end, "en-US", {
+formatRange(start, end, "en-US", {
   compactAmPm: true
 });
 ```
@@ -81,7 +81,7 @@ formatRangeUX(start, end, "en-US", {
 
 #### 🧼 Hide minutes (UX polish)
 ```ts
-formatRangeUX(start, end, "en-US", {
+formatRange(start, end, "en-US", {
   hideMinutes: true
 });
 ```
@@ -89,7 +89,7 @@ formatRangeUX(start, end, "en-US", {
 
 ### 🎛 Configurable options
 ```ts
-formatRangeUX(start, end, locale, {
+formatRange(start, end, locale, {
   spaced: false,        // 10:00–12:00 vs 10:00 – 12:00
   hour12: undefined,    // auto-detect (or force true/false)
   compactAmPm: false,   // 10am vs 10 AM
@@ -104,22 +104,22 @@ npm install rangewise
 
 $$ 🛠 Usage
 ```ts
-import { formatRangeUX } from "rangewise";
+import { formatRange } from "rangewise";
 
 const start = new Date("2026-04-16T10:00:00");
 const end = new Date("2026-04-16T12:00:00");
 
-formatRangeUX(start, end);
+formatRange(start, end);
 // Today, 10:00–12:00
 ```
 ### 🌍 With locale
 ```ts
-formatRangeUX(start, end, "es-ES");
+formatRange(start, end, "es-ES");
 // Hoy, 10:00–12:00
 ```
 ### ⚙️ With options
 ```ts
-formatRangeUX(start, end, "en-US", {
+formatRange(start, end, "en-US", {
   compactAmPm: true,
   hideMinutes: true
 });
@@ -129,7 +129,7 @@ formatRangeUX(start, end, "en-US", {
 
 Rangewise supports deterministic testing using a fixed now value:
 ```ts
-formatRangeUX(start, end, "en-IN", {
+formatRange(start, end, "en-IN", {
   now: new Date("2026-04-16T09:00:00")
 });
 ```
@@ -179,11 +179,3 @@ MIT License
 ## 💡 Author
 
 Built with a focus on UX clarity and real-world usage, not just date correctness.
-
-
----
-
-If you want, next I can:
-- Add **npm + GitHub badges (looks much more legit)**
-- Write a **short punchy tagline for your repo header**
-- Help you **publish this to npm (final step 🚀)**

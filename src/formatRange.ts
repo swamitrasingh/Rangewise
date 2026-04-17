@@ -56,6 +56,34 @@ function isSameWeek(a: Date, b: Date, locale: string): boolean {
   );
 }
 
+function formatFullDate(date: Date, locale: string): string {
+  return new Intl.DateTimeFormat(locale, {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(date);
+}
+
+function formatDayMonth(date: Date, locale: string): string {
+  return new Intl.DateTimeFormat(locale, {
+    day: "numeric",
+    month: "short",
+  }).format(date);
+}
+
+function formatDayOnly(date: Date, locale: string): string {
+  return new Intl.DateTimeFormat(locale, {
+    day: "numeric",
+  }).format(date);
+}
+
+function formatMonthYear(date: Date, locale: string): string {
+  return new Intl.DateTimeFormat(locale, {
+    month: "short",
+    year: "numeric",
+  }).format(date);
+}
+
 // -----------------------------
 // 📅 DATE HELPERS (NOW-AWARE)
 // -----------------------------
@@ -115,12 +143,35 @@ function getHour12(locale: string): boolean {
 // 🧩 FORMAT HELPERS
 // -----------------------------
 
-function formatDate(
+export function formatDate(
   date: Date,
-  locale: string,
-  options: Intl.DateTimeFormatOptions
+  locale = "en-IN",
+  options: FormatOptions = {}
 ): string {
-  return new Intl.DateTimeFormat(locale, options).format(date);
+  const { hour12, compactAmPm, hideMinutes, now = new Date() } = options;
+
+  const finalHour12 = hour12 ?? getHour12(locale);
+  const label = getLabel(date, locale, now);
+
+  const time = formatTime(
+    date,
+    locale,
+    finalHour12,
+    compactAmPm,
+    hideMinutes
+  );
+
+  const fullDate = new Intl.DateTimeFormat(locale, {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(date);
+
+  if (label) {
+    return `${label}, ${time}`;
+  }
+
+  return `${fullDate}, ${time}`;
 }
 
 function formatTime(
@@ -165,7 +216,9 @@ function getAmPm(date: Date): "am" | "pm" {
 }
 
 function formatWeekday(date: Date, locale: string): string {
-  return formatDate(date, locale, { weekday: "short" });
+  return new Intl.DateTimeFormat(locale, {
+    weekday: "short",
+  }).format(date);
 }
 
 function getLabel(date: Date, locale: string, now: Date): string | null {
@@ -177,7 +230,7 @@ function getLabel(date: Date, locale: string, now: Date): string | null {
   if (isYesterday(date, now)) return labels.yesterday;
 
   if (isSameWeek(date, now, locale)) {
-    return formatWeekday(date, locale);
+    return formatWeekday(date, locale); // safe now
   }
 
   return null;
@@ -187,7 +240,7 @@ function getLabel(date: Date, locale: string, now: Date): string | null {
 // 🚀 MAIN FUNCTION
 // -----------------------------
 
-export function formatRangeUX(
+export function formatRange(
   start: Date,
   end: Date,
   locale = "en-IN",
@@ -200,21 +253,9 @@ export function formatRangeUX(
 
   const finalHour12 = hour12 ?? getHour12(locale);
 
-  const fullDate = (d: Date) =>
-    formatDate(d, locale, {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    });
-
-  const dayMonth = (d: Date) =>
-    formatDate(d, locale, {
-      day: "numeric",
-      month: "short",
-    });
-
-  const dayOnly = (d: Date) =>
-    formatDate(d, locale, { day: "numeric" });
+  const fullDate = (d: Date) => formatFullDate(d, locale);
+  const dayMonth = (d: Date) => formatDayMonth(d, locale);
+  const dayOnly = (d: Date) => formatDayOnly(d, locale);
 
   const label = getLabel(start, locale, now);
 
@@ -239,19 +280,19 @@ export function formatRangeUX(
     let timeRange = `${startTime}${separator}${endTime}`;
 
     // ✅ AM/PM collapse
-   if (finalHour12) {
-  const startAmPm = getAmPm(start);
-  const endAmPm = getAmPm(end);
+    if (finalHour12) {
+      const startAmPm = getAmPm(start);
+      const endAmPm = getAmPm(end);
 
-  if (startAmPm === endAmPm) {
-    const cleanedStart = startTime
-      .replace(/\s?(AM|PM)/i, "")
-      .replace(/\s?(am|pm)/i, "")
-      .trim();
+      if (startAmPm === endAmPm) {
+        const cleanedStart = startTime
+          .replace(/\s?(AM|PM)/i, "")
+          .replace(/\s?(am|pm)/i, "")
+          .trim();
 
-    timeRange = `${cleanedStart}${separator}${endTime}`;
-  }
-}
+        timeRange = `${cleanedStart}${separator}${endTime}`;
+      }
+    }
 
     return label
       ? `${label}, ${timeRange}`
@@ -263,10 +304,7 @@ export function formatRangeUX(
   // -----------------------------
 
   if (analysis.sameMonth) {
-    return `${dayOnly(start)}${separator}${dayOnly(end)} ${formatDate(end, locale, {
-      month: "short",
-      year: "numeric",
-    })}`;
+    return `${dayOnly(start)}${separator}${dayOnly(end)} ${formatMonthYear(end, locale)}`;
   }
 
   // -----------------------------
@@ -274,11 +312,7 @@ export function formatRangeUX(
   // -----------------------------
 
   if (analysis.sameYear) {
-    return `${dayMonth(start)}${separator}${formatDate(end, locale, {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    })}`;
+    return `${dayMonth(start)}${separator}${formatFullDate(end, locale)}`;
   }
 
   // -----------------------------

@@ -10,7 +10,10 @@
   ],
   "scripts": {
     "build": "tsup",
-    "dev": "tsup --watch"
+    "dev": "tsup --watch",
+    "demo": "vite demo",
+    "release": "npm run build && npm version minor && git push --follow-tags && npm publish",
+    "release:full": "git checkout main && git pull && git merge --no-ff HEAD@{1} && npm run build && npm version minor && git push --follow-tags && npm publish"
   },
   "repository": {
     "type": "git",
@@ -52,6 +55,7 @@
     "@types/node": "^25.6.0",
     "tsup": "^8.5.1",
     "tsx": "^4.21.0",
-    "typescript": "^6.0.2"
+    "typescript": "^6.0.2",
+    "vite": "^8.0.8"
   }
 }

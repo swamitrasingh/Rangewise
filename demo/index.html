@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar Demo</title>
+
+    <!-- Tailwind CSS (Well-known CSS Library for styling) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Flatpickr CSS (Calendar Control) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 min-h-screen p-8 flex justify-center items-start">
+    <div class="w-full max-w-lg bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+        <h1 class="text-3xl font-bold text-gray-800 mb-8 text-center tracking-tight">Calendar Demo</h1>
+
+        <!-- Calendar 1 Section -->
+        <div class="mb-8">
+            <label for="calendar1" class="block text-sm font-semibold text-gray-700 mb-2">Select Date & Time</label>
+            <div class="relative">
+                <input type="text" id="calendar1"
+                    class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm"
+                    placeholder="Click to select date and time...">
+            </div>
+
+            <!-- Output Label for Calendar 1 -->
+            <div class="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-100 flex items-center shadow-inner">
+                <svg class="w-5 h-5 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span class="text-sm font-medium text-blue-700 mr-2">Selected:</span>
+                <span id="outputLabel" class="text-sm font-bold text-blue-900">None</span>
+            </div>
+        </div>
+
+        <div class="border-t border-gray-200 my-8"></div>
+
+        <!-- Calendar 2 Section -->
+        <div class="mb-4">
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Second Calendar (Date & Time Range)</label>
+            <div class="flex items-center space-x-4">
+                <div class="relative flex-1">
+                    <input type="text" id="calendar2_start"
+                        class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all shadow-sm"
+                        placeholder="Select Start Date/Time...">
+                </div>
+                <span class="text-gray-400 font-semibold">—</span>
+                <div class="relative flex-1">
+                    <input type="text" id="calendar2_end"
+                        class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all shadow-sm"
+                        placeholder="Select End Date/Time...">
+                </div>
+            </div>
+
+            <!-- Output Label for Calendar 2 -->
+            <div class="mt-4 p-4 bg-purple-50 rounded-lg border border-purple-100 flex items-center shadow-inner">
+                <svg class="w-5 h-5 text-purple-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                <span class="text-sm font-medium text-purple-700 mr-2">Selected Range:</span>
+                <span id="outputLabel2" class="text-sm font-bold text-purple-900">None</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Flatpickr JS (Calendar Control) -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <!-- Compiled TS/JS Logic (Your custom functions go here) -->
+    <script type="module" src="./demo.ts"></script>
+</body>
+
+</html>

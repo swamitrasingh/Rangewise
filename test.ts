@@ -1,4 +1,4 @@
-import { formatRangeUX } from "./src/formatRangeUX";
+import { formatDate, formatRange } from "./src/formatRange";
 
 let passed = 0;
 let failed = 0;
@@ -15,7 +15,7 @@ function runTest(
   locale = "en-IN"
 ) {
   try {
-    const result = formatRangeUX(start, end, locale, {
+    const result = formatRange(start, end, locale, {
       ...options,
       now: NOW,
     });
@@ -231,7 +231,7 @@ runTest(
 // --------------------------------------------------
 
 try {
-  formatRangeUX(
+  formatRange(
     new Date("2026-04-16T12:00:00"),
     new Date("2026-04-16T10:00:00"),
     "en-IN",
@@ -252,6 +252,163 @@ try {
   passed++;
 }
 
+// --------------------------------------------------
+// FORMAT DATE (SINGLE DATETIME)
+// --------------------------------------------------
+
+function runDateTest(
+  label: string,
+  date: Date,
+  expected: string,
+  options: any = {},
+  locale = "en-IN"
+) {
+  try {
+    const result = formatDate(date, locale, {
+      ...options,
+      now: NOW,
+    });
+
+    const isPass = result === expected;
+
+    console.log(`\n=== ${label} ===`);
+    console.log("Output  :", result);
+    console.log("Expected:", expected);
+    console.log(isPass ? "✅ PASS" : "❌ FAIL");
+
+    if (isPass) passed++;
+    else failed++;
+  } catch (e: any) {
+    console.log(`\n=== ${label} (ERROR) ===`);
+    console.log("Error:", e.message);
+    failed++;
+  }
+}
+
+// --------------------------------------------------
+// BASIC CASES
+// --------------------------------------------------
+
+runDateTest(
+  "Today (default en-IN)",
+  new Date("2026-04-16T10:00:00"),
+  "Today, 10:00"
+);
+
+runDateTest(
+  "Today (en-US 12h)",
+  new Date("2026-04-16T10:00:00"),
+  "Today, 10:00 AM",
+  {},
+  "en-US"
+);
+
+runDateTest(
+  "Today (force 24h)",
+  new Date("2026-04-16T10:00:00"),
+  "Today, 10:00",
+  { hour12: false },
+  "en-US"
+);
+
+// --------------------------------------------------
+// TOMORROW / YESTERDAY
+// --------------------------------------------------
+
+runDateTest(
+  "Tomorrow",
+  new Date("2026-04-17T10:00:00"),
+  "Tomorrow, 10:00"
+);
+
+runDateTest(
+  "Yesterday",
+  new Date("2026-04-15T10:00:00"),
+  "Yesterday, 10:00"
+);
+
+// --------------------------------------------------
+// SAME WEEK (weekday label)
+// --------------------------------------------------
+
+runDateTest(
+  "Same week (weekday)",
+  new Date("2026-04-14T10:00:00"),
+  "Tue, 10:00"
+);
+
+// --------------------------------------------------
+// OLDER DATE (full date)
+// --------------------------------------------------
+
+runDateTest(
+  "Older date (full format)",
+  new Date("2026-03-10T10:00:00"),
+  "10 Mar 2026, 10:00"
+);
+
+// --------------------------------------------------
+// COMPACT AM/PM
+// --------------------------------------------------
+
+runDateTest(
+  "Compact AM/PM",
+  new Date("2026-04-16T10:00:00"),
+  "Today, 10:00am",
+  { compactAmPm: true },
+  "en-US"
+);
+
+// --------------------------------------------------
+// HIDE MINUTES
+// --------------------------------------------------
+
+runDateTest(
+  "Hide minutes",
+  new Date("2026-04-16T10:00:00"),
+  "Today, 10",
+  { hideMinutes: true }
+);
+
+// --------------------------------------------------
+// COMBINED OPTIONS
+// --------------------------------------------------
+
+runDateTest(
+  "Compact + hideMinutes",
+  new Date("2026-04-16T10:00:00"),
+  "Today, 10am",
+  { hideMinutes: true, compactAmPm: true },
+  "en-US"
+);
+
+// --------------------------------------------------
+// LOCALES
+// --------------------------------------------------
+
+runDateTest(
+  "Spanish",
+  new Date("2026-04-16T10:00:00"),
+  "Hoy, 10:00",
+  {},
+  "es-ES"
+);
+
+runDateTest(
+  "French",
+  new Date("2026-04-16T10:00:00"),
+  "Aujourd’hui, 10:00",
+  {},
+  "fr-FR"
+);
+
+runDateTest(
+  "German",
+  new Date("2026-04-16T10:00:00"),
+  "Heute, 10:00",
+  {},
+  "de-DE"
+);
 // --------------------------------------------------
 // SUMMARY
 // --------------------------------------------------
